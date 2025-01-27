@@ -1,0 +1,235 @@
+---
+title: "Hw_2"
+author: "Pranita"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, echo = FALSE, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
+
+#importing all libraries & datasets
+library(ggplot2)
+library(tidyverse)
+profs <- read_csv("profs.csv")
+bike <- read_csv("bikeshare.csv")
+metro <- read_csv("capmetro_UT.csv")
+billboard <- read_csv("billboard.csv")
+
+
+```
+
+Name: Pranita Chaudhury
+
+UT EID: pc28377
+
+Click [https://github.com/PranitaChau/Hw_2](https://github.com/PranitaChau/Hw_2) for my Github
+
+
+
+# Problem 1
+
+```{r}
+#histogram of course evaluations
+
+ggplot(profs, aes(eval)) + geom_histogram(binwidth = .1, fill = "lightblue", color = "navy") + labs(title = " UT Professor Course Evaluations", x= "Evaluation Score (1 to 5)", y = "Number of evaluations")
+
+```
+This graph shows the distribution of course evaluations of UT Austin professors from a scale of 1 to 5. Additionally, the majority of course evaluations for UT Austin professors are above 3.6 out of 5.0, with the median landing at 4.0. From this we can takeaway that most professors at UT Austin are above average based on their course ratings.
+
+
+```{r}
+# Comparing Native vs. Non-Native English Speaking Professors evaluations
+
+ggplot(profs, aes(x= native, y = eval, fill = native)) + geom_boxplot() + labs(title = "Course Evaluations: Native vs. Non-Native English Speaking Professors", x = "Native or Non-Native Speakers", y = "Evaluation Score (1-5)")
+
+
+```
+This boxplot shows the evaluation scores for native English speaking professors compared to non-native English speaking professors. From this it can be concluded that Professors who are native English speakers earn, on average, a higher course evaluation score than non-native English speakers. The median on non-native English speakers is lower than Q1 for native English speaking professors. This suggests that native English speaking professors are either better professors, or it is easier to understand them.    
+
+```{r}
+
+#comparing Professor's gender to their evaluation
+
+ggplot(profs, aes(eval, fill = gender)) + geom_histogram(binwidth = .1, color = "black") + facet_wrap(~gender)
+
+```
+This graph compares UT Austin male professor's course evaluations to female professors. There is a peak for the female professors at the higher end of the 3.0 scores, while the peak for male professors is at the lower end of the 4.0 scores, indicating the male professors have higher evaluation scores on average.
+
+```{r}
+
+#comparing evaluations to physical attractiveness
+ggplot(profs, aes(x = beauty, y = eval)) + geom_point() + labs(title = "Comparing Physical attractiveness to Course Evaluations", x = "Professor's Physical Attractiveness (-2 to 2)" , y = "Evaluation score (1 to 5)")
+
+
+
+```
+Based on the graph there is no obvious correlation between a professor's physical attractiveness and their course evaluation. This can be backed up by looking at the correlation coefficient, which is 0.1890391, indicating a very weak positive linear correlation between the two variables at hand. This means that the physical attractivness of a professor has a weak positive impact on their course evaluations. 
+
+
+
+# Problem 2
+
+
+
+```{r}
+#using pipe tool to group by hour and then find the mean by hour
+ggplot(bike |>
+  group_by(hr) |>
+  summarize(hourly_means = mean(total, na.rm = TRUE))) + 
+  
+  #graphing
+  geom_line(aes(x=hr, y=hourly_means)) + labs(title = "Average bike rentals per hour", x = "Time (hours)", y= "Number of rides") + theme_minimal()
+
+
+```
+This graph represents the average number of public bike rentals per hour in any given day. There is a spike around 8am and another larger one at 5pm, indicating a sudden increase in bike rental users. This could be a result of people using it to get to work and back home afterwards, as it correlates with the usual work hours of 9 to 5. 
+
+
+```{r}
+#using pipe tool to group by workday or not then finding mean
+ggplot(bike |>
+  group_by(hr, workingday) |>
+  summarize(means_per_day = mean(total))) + 
+  
+  #graphing facet wrap graph
+  geom_line(aes(x=hr, y=means_per_day)) + 
+  facet_wrap(~workingday, labeller = labeller (workingday = c("1" = "Working Day", "0" = "Non-Work Day"))) +  labs(title = "Average bike rentals per hour based on type of day", x = "Hour", y= "Number of rides") + theme_minimal()
+
+```
+
+The first graph represents the average number of public bike rentals per hour in a non-work day, while the second graphs refers to average bike rentals per hour on a weekday. The first graph shows a curve from around noon to 5pm, while the second graph has more rapid sharp spikes at 9am and 5pm. The bike rentals from first graph are due to people traveling for recreational and errand purposes, which is why are they more spread out and not all at the same time, but the working day graph is due to people traveling to and from work which causes the spikes as everyone needs them at a similar time. 
+
+```{r}
+# filtering only 9am bikes and by workday/not and weather type
+ggplot(bike |>
+  filter(hr==9) |>
+  group_by(workingday, weathersit) |>
+  summarize(avg_perDay_perWheather = mean(total))) + 
+  
+  #graphing 
+  geom_col(aes(x=as.factor(weathersit), y=avg_perDay_perWheather, fill = as.factor(weathersit))) + 
+  facet_wrap(~workingday, labeller = labeller(workingday = c("0" = "Non-Working Day", "1" = "Working Day"))) +
+  labs(title = "Average Rides taken at 9am based on weather", x = "Weather (scale of 1-3)", y = "Average Number of Rides taken") +
+  theme_minimal() 
+
+
+
+
+
+
+
+```
+
+This graph shows the number of average rides taken by public bike rental users at 9am segregated by weather as well as if it is a working day or not. Through this we can conclude that the weather does make an impact on the rides taken at 9am on a non-working day, but it does not impact the number of rides taken at that same time on a working day unless the weather gets really bad (categorized as a 3 or higher). This is due to the fact that people have to use the bikes to get to work at 9am, which a mist will not interfere with however heavy rain or a thunderstorm would cause the amount of people going to work to decrease on that given day.
+
+
+# Problem 3
+
+```{r}
+# Pasted from pdf of questions
+metro = mutate(metro,
+day_of_week = factor(day_of_week,
+levels=c("Mon", "Tue", "Wed","Thu", "Fri", "Sat", "Sun")),
+month = factor(month,
+levels=c("Sep", "Oct","Nov")))
+
+
+#wrangling/ grouping into hour, day, and months
+avg_boarding <- metro |>
+  group_by(day_of_week, hour_of_day, month) |>
+  summarise(avg_boarding = mean(boarding))
+
+#graphing
+ggplot(avg_boarding, aes(x = hour_of_day, y= avg_boarding, color = month)) + geom_line() + facet_wrap(~day_of_week) + labs(title = "Average Cap Metro boarding by hour, day, and month", x = "Hour", y = "Average Number of passengers")
+```
+
+This graph shows the average number of passengers boarding Capital Metro's bus network during the months of September, October, and November, segregated by day of the week, which show the average number of passengers boarding by each hour of the day. From these it can be inferred that the weekends have less than 25 people board per hour while the weekdays see a lot more traffic. The weekdays see a similar traffic pattern, with a peak between 3-5pm around the end of work hours in time for people to get back home. Additionally, on average the month of November saw the least traffic in passengers other than Mondays, where the month of September saw the least numbers of passengers. I think that this is due to the fact that people are just coming back from summer, and are still getting used to that start of the week (Mondays) and have not yet set into their routines so they are not using the busses daily People may travel less on Wednesday, Thursday, and Fridays due to a combination of cold weather and the holiday season approaching so they are trying to save up for that. In conclusion, Cap Metro can think about decreasing their routes on the weekends and between midnight and 5am since that is where they see the least amount of passengers taking rides, while they should keep all routes running during the day on weekdays as that is when the maximum amount of people board their busses. 
+
+
+```{r}
+#comparing Cap Metro boardings to temperatures
+ggplot(metro, aes(x = temperature, y = boarding, color = weekend)) + geom_point() + facet_wrap(~hour_of_day) + labs(title = "Cap Metro Boardings vs Temperature by hour of the day", x = "Temperature (c)", y = "Number of passengers")
+
+
+
+```
+
+The figure shows a comparison of people boarding Capital Metro busses to the temperature in the day, and this graph is segregated by the hours of the day as well as if it is a working or a non-working day. When holding the hour of the day and weekend status constant, higher temperatures seem to increase the amount of students traveling on the bus. This can be seen as there are more blue dots on the right half of the graph (indicating increased temperatures) compared to the left which has lower temperatures.
+
+
+# Problem 4
+
+```{r}
+
+top_10 <- billboard |>
+  group_by(performer, song) |>
+  filter(year != 2021) |>
+  summarise(count = n())|>
+  arrange(desc(count)) |>
+  head(10)
+
+# View the result
+top_10
+
+
+
+
+
+
+```
+This table shows the top 10 more popular songs from the Billboard 100 from 1958 to 2020 (inclusive), as well as the performer and the count, which is the number of weeks spent on the Billboard 100. The song that spent the most time on the Billboard 100 was Radioactive by Imagine Dragons which spent 87 weeks on the Billboard.
+
+```{r}
+
+#filtering 1958 and 2021 out, and counting how many songs are in each year
+songs_per_year <- billboard |>
+  filter(year != 1958 & year != 2021) |>
+  group_by(year, song) |>
+  summarise(song_appearance_count = n())
+
+#counting how many of those songs are unique per year
+unique_song_billboard <- songs_per_year |>
+  group_by(year) |>
+  summarise(unique_songs = n_distinct(song))
+
+#graph
+ggplot(unique_song_billboard, aes(x = year, y = unique_songs)) + geom_line() + labs(title = "Number of unique songs on the Billboard 100 each year", x = "Year", y = "Number of unique songs")
+
+```
+
+This figure shows the number of unique songs which were on the Billboard 100 each year from 1958 to 2021 (non-inclusive). The year with the highest unique songs on the Billboard was 1966, and the numbers plumeted from then. I thought this was an interesting trend, and could be due to the main stream media and music, which helped make certain songs more popular and sharebale, as we can see with an all time low in 2001. From then it rapidly climbed up again, which I think could be credited to the increase in social media. 
+
+
+
+```{r}
+
+#counting how long the song spent on the billboard grouped by performer
+ten_week_hit <- billboard |>
+  group_by(performer, song) |>
+  summarise(weeks_on_chart = n()) |>
+  filter(weeks_on_chart >= 10)
+
+#the 19 artists with over 30 ten-week hits
+artists_19 <- ten_week_hit |>
+  group_by(performer) |>
+  summarise(ten_week_hit_count = n()) |>
+  filter(ten_week_hit_count >= 30) |>
+  arrange(desc(performer))
+
+
+#graphing
+ggplot(artists_19, aes(x = performer, y = ten_week_hit_count)) +
+  geom_bar(stat = "identity", fill = "skyblue", color = "navy") + coord_flip() +  labs(x = "Performer", y = "Number of 10 Week Hits", 
+       title = "Number of Ten-Week Hits by Performers") +
+  theme_minimal()
+
+```
+
+The figure shows the 19 performers that have had over thirty 10 week hits on the Billboard 100. A 10 week hit is when the song stays on the Billboard for 10 or more weeks. The performer with the longest hit was Elton John, with 52 weeks on the Billboard. 
+
+
