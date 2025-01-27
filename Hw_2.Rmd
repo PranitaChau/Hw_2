@@ -58,7 +58,7 @@ This boxplot shows the evaluation scores for native English speaking professors 
 ggplot(profs, aes(eval, fill = gender)) + geom_histogram(binwidth = .1, color = "black") + facet_wrap(~gender)
 
 ```
-This graph compares UT Austin male professor's course evaluations to female professors. There is a peak for the female professors at the higher end of the 3.0 scores, while the peak for male professors is at the lower end of the 4.0 scores, indicating the male professors have higher evaluation scores on average.
+This graph compares UT Austin male professor's course evaluations to female professors. There is a peak for the female professors at the higher end of the 3.0 scores, while the peak for male professors is at the lower end of the 4.0 scores. From this we can take away that the male professors have higher evaluation scores on average when compared to female prefessors at UT Austin.
 
 ```{r}
 
@@ -68,7 +68,7 @@ ggplot(profs, aes(x = beauty, y = eval)) + geom_point() + labs(title = "Comparin
 
 
 ```
-Based on the graph there is no obvious correlation between a professor's physical attractiveness and their course evaluation. This can be backed up by looking at the correlation coefficient, which is 0.1890391, indicating a very weak positive linear correlation between the two variables at hand. This means that the physical attractivness of a professor has a weak positive impact on their course evaluations. 
+Based on the graph there is no obvious correlation between a professor's physical attractiveness and their course evaluation. This can be backed up by looking at the correlation coefficient, which is 0.1890391, indicating a very weak positive linear correlation between the two variables at hand. This means that the physical attractiveness of a professor has a weak positive impact on their course evaluations. 
 
 
 
@@ -83,11 +83,11 @@ ggplot(bike |>
   summarize(hourly_means = mean(total, na.rm = TRUE))) + 
   
   #graphing
-  geom_line(aes(x=hr, y=hourly_means)) + labs(title = "Average bike rentals per hour", x = "Time (hours)", y= "Number of rides") + theme_minimal()
+  geom_line(aes(x=hr, y=hourly_means)) + labs(title = "Average bike rentals per hour", x = "Time (hours)", y= "Number of bikes rented") + theme_minimal()
 
 
 ```
-This graph represents the average number of public bike rentals per hour in any given day. There is a spike around 8am and another larger one at 5pm, indicating a sudden increase in bike rental users. This could be a result of people using it to get to work and back home afterwards, as it correlates with the usual work hours of 9 to 5. 
+This graph represents the average number of public bike rentals per hour in any given day, with the x-axis representing the hours in the day and the y-axis representing the number of bike rentals (on average) at that time of the day. There is a spike at 8 (8am) and another larger one at 17 (5pm), indicating a sudden increase in bike rental users. This could be a result of people using it to get to work and back home afterwards, as it correlates with the usual work hours of 9 to 5. 
 
 
 ```{r}
@@ -98,11 +98,11 @@ ggplot(bike |>
   
   #graphing facet wrap graph
   geom_line(aes(x=hr, y=means_per_day)) + 
-  facet_wrap(~workingday, labeller = labeller (workingday = c("1" = "Working Day", "0" = "Non-Work Day"))) +  labs(title = "Average bike rentals per hour based on type of day", x = "Hour", y= "Number of rides") + theme_minimal()
+  facet_wrap(~workingday, labeller = labeller (workingday = c("1" = "Working Day", "0" = "Non-Work Day"))) +  labs(title = "Average bike rentals per hour based on type of day", x = "Hour", y= "Number of bike rentals") + theme_minimal()
 
 ```
 
-The first graph represents the average number of public bike rentals per hour in a non-work day, while the second graphs refers to average bike rentals per hour on a weekday. The first graph shows a curve from around noon to 5pm, while the second graph has more rapid sharp spikes at 9am and 5pm. The bike rentals from first graph are due to people traveling for recreational and errand purposes, which is why are they more spread out and not all at the same time, but the working day graph is due to people traveling to and from work which causes the spikes as everyone needs them at a similar time. 
+The first graph represents the average number of public bike rentals per hour in a non-work day, while the second graphs refers to average bike rentals per hour on a weekday, with the x-asex representing the hours in the day and the y-axes representing the number of bike rentals (on average) at that time of the day. The first graph shows a curve from around noon to 5pm, while the second graph has more rapid sharp spikes at 9am and 5pm. The bike rentals from first graph are due to people traveling for recreational and errand purposes, which is why are they more spread out and not all at the same time, but the working day graph is due to people traveling to and from work which causes the spikes as everyone needs them at a similar time. 
 
 ```{r}
 # filtering only 9am bikes and by workday/not and weather type
@@ -114,7 +114,7 @@ ggplot(bike |>
   #graphing 
   geom_col(aes(x=as.factor(weathersit), y=avg_perDay_perWheather, fill = as.factor(weathersit))) + 
   facet_wrap(~workingday, labeller = labeller(workingday = c("0" = "Non-Working Day", "1" = "Working Day"))) +
-  labs(title = "Average Rides taken at 9am based on weather", x = "Weather (scale of 1-3)", y = "Average Number of Rides taken") +
+  labs(title = "Average 9am rides: workday vs. non-workday by weather", x = "Weather (scale of 1-3)", y = "Average Number of bikes rented", fill = "Weather Categorization") +
   theme_minimal() 
 
 
@@ -125,7 +125,7 @@ ggplot(bike |>
 
 ```
 
-This graph shows the number of average rides taken by public bike rental users at 9am segregated by weather as well as if it is a working day or not. Through this we can conclude that the weather does make an impact on the rides taken at 9am on a non-working day, but it does not impact the number of rides taken at that same time on a working day unless the weather gets really bad (categorized as a 3 or higher). This is due to the fact that people have to use the bikes to get to work at 9am, which a mist will not interfere with however heavy rain or a thunderstorm would cause the amount of people going to work to decrease on that given day.
+This figure shows the number of average rides taken by public bike rental users at 9am segregated by weather as well as if it is a working day or not. The x-axes represents the weather, and the higher the weather categorization the harsher the weather is. The y-axes represents the average number of bike rentals at 9am during that weather condition, and the left graph shows this data on non-working days while the right graph shows the data on work days. Through this we can conclude that the weather does make an impact on the rides taken at 9am on a non-working day, but it does not impact the number of rides taken at that same time on a working day unless the weather gets really bad (categorized as a 3 or higher). This is due to the fact that people have to use the bikes to get to work at 9am, which a mist will not interfere with however heavy rain or a thunderstorm would cause the amount of people going to work to decrease on that given day.
 
 
 # Problem 3
@@ -202,7 +202,7 @@ ggplot(unique_song_billboard, aes(x = year, y = unique_songs)) + geom_line() + l
 
 ```
 
-This figure shows the number of unique songs which were on the Billboard 100 each year from 1958 to 2021 (non-inclusive). The year with the highest unique songs on the Billboard was 1966, and the numbers plumeted from then. I thought this was an interesting trend, and could be due to the main stream media and music, which helped make certain songs more popular and sharebale, as we can see with an all time low in 2001. From then it rapidly climbed up again, which I think could be credited to the increase in social media. 
+This figure shows the number of unique songs which were on the Billboard 100 each year from 1958 to 2021 (non-inclusive). The year with the highest unique songs on the Billboard was 1966, and the numbers plumeted from then. I thought this was an interesting trend, and could be due to the main stream media and music, which helped make certain songs more popular and sharebale, as we can see with an all time low in 2001. From then it rapidly climbed up again, which I think could be credited to the increase in social media. Therefore, I think that based on the Billboard 100 the "musical diversity" decreased from 1958 to 2001, but after the 2000's the diversity started to increase again. 
 
 
 
@@ -224,12 +224,12 @@ artists_19 <- ten_week_hit |>
 
 #graphing
 ggplot(artists_19, aes(x = performer, y = ten_week_hit_count)) +
-  geom_bar(stat = "identity", fill = "skyblue", color = "navy") + coord_flip() +  labs(x = "Performer", y = "Number of 10 Week Hits", 
-       title = "Number of Ten-Week Hits by Performers") +
+  geom_bar(stat = "identity", fill = "skyblue", color = "navy") + coord_flip() +  labs(x = "Performer", y = "Number of 10 week hits", 
+       title = "Number of 10 week hits by performer") +
   theme_minimal()
 
 ```
 
-The figure shows the 19 performers that have had over thirty 10 week hits on the Billboard 100. A 10 week hit is when the song stays on the Billboard for 10 or more weeks. The performer with the longest hit was Elton John, with 52 weeks on the Billboard. 
+A 10 week hit is when the song stays on the Billboard for 10 or more weeks. The figure shows the 19 performers that have had over thirty 10 week hits on the Billboard 100, as well as the number of 10 week hits that they have had. Most of these performers had 30-40 such hits, and the performer with the most 10 week hits was Elton John, with 52 such hits on the Billboard. 
 
 
